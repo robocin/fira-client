@@ -7,7 +7,7 @@ GrSim_Client::GrSim_Client(QObject *parent) :
     // create a QUDP socket
     socket = new QUdpSocket(this);
 
-    this->_addr.setAddress("224.5.23.2");
+    this->_addr.setAddress("127.0.0.1");
     this->_port = quint16(20011);
 
     socket->bind(this->_addr, this->_port);
