@@ -1,21 +1,19 @@
 
 # ssl-client
-> Client base code #ssl #robocup #ssl-vision #grSim 
+> Client base code #vss #LARC #ssl-vision #FiraSim 
 
 ## Description
 This repository was created for the purpose of helping beginner teams.
 This project is capable of:
-- receive field and robot information from ssl-vision
-- receive field and robot information from grSim
+- receive field and robot information from FiraSim
 - Send commands to robots on grSim
 
 Almost every material present here can be found at:
 
  [RoboCup/ssl-vision](https://github.com/RoboCup-SSL/ssl-vision)
 
- [RoboCup/grSim](https://github.com/RoboCup-SSL/grSim)
+ [Robocin/FIRASim](https://github.com/robocin/FIRASim)
 
- [WarBots-RoboCup-SSL](https://github.com/findcongwang/WarBots-RoboCup-SSL)
 
 Feel free to ask and contribute too :)
 
@@ -23,7 +21,7 @@ Feel free to ask and contribute too :)
 - Qt Creator (remember to go in project and disable "shadow build")
 - [protobuf](https://github.com/google/protobuf)
 
-*Tested with: Qt 5.8.0, protoc 2.5.0, protoc 2.6.1, protoc 3.x, Ubuntu 14.04.5 LTS.*
+*Tested with: Qt 5.8.0, protoc 3.x, Ubuntu 14.04.5 LTS.*
 
 ## First Steps
 1. If you have protobuf installed, check which version you use with the command:
@@ -47,11 +45,8 @@ sh compile.sh
 *Obs: when building the program, if something referring to `google/protobuf/stubs/common.h` has any errors, it will probably be an incompatibility version problem with protobuf (`include/google`)*.
 
 ## Usage example
-1. Open the grSim.
-1. Turn off all robots.
-1. Put them all out of bounds.
-1. Get one of the blue team robots, put it inside the field and turn on.
-![](prints/exampleSimulation.png)
+1. Open the FiraSim.
+![](prints/FiraSim.png)
 
 1. Get the Vision multicast adress, Vision multicast port and Command listen port on grSim.
 ![](prints/ips.png)
@@ -66,5 +61,5 @@ sh compile.sh
 
 1. Run the Qt Project!
 
-#### Author: [Renato Sousa](https://github.com/renatoosousa) 
+#### Author: [Renato Sousa](https://github.com/renatoosousa)/Robocin (https://github.com/robocin)
 
