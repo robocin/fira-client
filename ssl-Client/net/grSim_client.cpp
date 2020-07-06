@@ -14,7 +14,7 @@ GrSim_Client::GrSim_Client(QObject *parent) :
     connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
 }
 
-void GrSim_Client::sendCommand(double velX, int id){
+void GrSim_Client::sendCommand(double velX, double velY, int id){
     double zero = 0.0;
     fira_message::sim_to_ref::Packet packet;
     bool yellow = false;
@@ -23,7 +23,7 @@ void GrSim_Client::sendCommand(double velX, int id){
     command->set_id(id);
 
     command->set_wheel_left(velX);
-    command->set_wheel_right(velX);
+    command->set_wheel_right(velY);
 
 
     QByteArray dgram;
