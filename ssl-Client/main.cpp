@@ -11,44 +11,285 @@
 #include "pb/replacement.pb.h"
 
 
-enum{
-    APROXIMA=0,
-    DECIDE_DESVIO,
-    SOBE,
-    DESCE,
-    VOLTA
-};
-
-class Objective{
-    double m_x;
-    double m_y;
-    double m_angle;
-
-public:
-    Objective(double t_x, double t_y, double t_angle): m_x(t_x),m_y(t_y),m_angle(t_angle){};
 
 
-    void setY(double value){
-        m_y = value;
+void posProcess(fira_message::Frame detection){
+    static Timer t;
+    bool side;
+    bool is_goal = false;
+    bool out_of_bands = false;
+    static int goals_blue = 0;
+    static int goals_yellow = 0;
+
+    int robots_blue_n = detection.robots_blue_size();
+    int robots_yellow_n = detection.robots_yellow_size();
+
+
+    // Goal Detection
+    if (detection.ball().x() > 0.75 && fabs(detection.ball().y()) < 0.2)
+    {
+        side = true;
+        goals_blue++;
+        is_goal = true;
+    }
+    else if (detection.ball().x() < -0.75 && fabs(detection.ball().y()) < 0.2)
+    {
+        side = false;
+        goals_yellow++;
+        is_goal = true;
+    }
+    if (detection.ball().x() < -2 || detection.ball().x() > 2 || detection.ball().y() > 2 || detection.ball().y() < -2)
+        out_of_bands = true;
+
+
+    bool penalty = false;
+    bool goal_shot = false;
+    if (detection.ball().x() < -0.6 && abs(detection.ball().y()) < 0.35)
+    {
+        // Penalti Detection
+        bool one_in_pen_area = false;
+        for (int i = 0; i < robots_blue_n; i++)
+        {
+            fira_message::Robot robot = detection.robots_blue(i);
+
+
+            if (robot.x() < -0.6 && fabs(robot.y()) < 0.35)
+            {
+                if (one_in_pen_area){
+                    penalty = true;
+                    side = true;
+                }
+                else
+                    one_in_pen_area = true;
+            }
+        }
+
+        // Atk Fault Detection
+
+        bool one_in_enemy_area = false;
+        for (int i = 0; i < robots_yellow_n; i++)
+        {
+            fira_message::Robot robot = detection.robots_yellow(i);
+
+            if (robot.x() < -0.6 && fabs(robot.y()) < 0.35)
+            {
+                if (one_in_enemy_area){
+                    goal_shot = true;
+                    side = false;
+
+                }
+                else
+                    one_in_enemy_area = true;
+            }
+        }
+
     }
 
-    void setAngle(double value){
-        m_angle = value;
+
+    if (detection.ball().x() > 0.6 && fabs(detection.ball().y()) < 0.35)
+    {
+        // Penalti Detection
+        bool one_in_pen_area = false;
+        for (int i = 0; i < robots_yellow_n; i++)
+        {
+            fira_message::Robot robot = detection.robots_yellow(i);
+
+            if (robot.x() > 0.6 && fabs(robot.y()) < 0.35)
+            {
+                if (one_in_pen_area){
+                    penalty = true;
+                    side =false;
+                }
+                else
+                    one_in_pen_area = true;
+            }
+        }
+
+        // Atk Fault Detection
+
+        bool one_in_enemy_area = false;
+        for (int i = 0; i < robots_blue_n; i++)
+        {
+            fira_message::Robot robot = detection.robots_blue(i);
+            if (robot.x() > 0.6 && abs(robot.y()) < 0.35)
+            {
+                if (one_in_enemy_area){
+                    goal_shot = true;
+                    side = true;
+
+                }
+                else
+                    one_in_enemy_area = true;
+            }
+        }
+
     }
 
-    void setX(double value){
-        m_x = value;
+    // Fault Detection
+    bool fault = false;
+    steps_fault++;
+    int quadrant = 4;
+    if (steps_fault * cfg->DeltaTime() * 1000 >= 10000)
+    {
+        if (fabs(ball_prev_pos.first - detection.ball().x()) < 0.0001 &&
+            fabs(ball_prev_pos.second - detection.ball().y()) < 0.0001){
+            if ((detection.ball().x() < -0.6) && abs(detection.ball().y() < 0.35)){
+                penalty = true;
+                side = true;
+            }else if(detection.ball().x() > 0.6 && abs(detection.ball().y() < 0.35)){
+
+                penalty = true;
+                side = false;
+            }else{
+                fault = true;
+                if(detection.ball().x() < 0 && detection.ball().y() <= 0){
+                   quadrant = 0;
+                }else if(detection.ball().x() < 0 && detection.ball().y() >= 0){
+                    quadrant = 1;
+                }else if(detection.ball().x() > 0 && detection.ball().y() <= 0){
+                    quadrant = 2;
+                }else if(detection.ball().x() > 0 && detection.ball().y() >= 0){
+                    quadrant = 3;
+                }
+            }
+        }
+        ball_prev_pos.first = detection.ball().x();
+        ball_prev_pos.second = detection.ball().y();
+        steps_fault = 0;
     }
-    double x(){
-        return m_x;
+    else
+    {
+        if (fabs(ball_prev_pos.first - detection.ball().x()) > 0.0001 ||
+            fabs(ball_prev_pos.second - detection.ball().y()) > 0.0001)
+        {
+            steps_fault = 0;
+        }
     }
-    double y(){
-        return m_y;
+    ball_prev_pos.first = detection.ball().x();
+    ball_prev_pos.second = detection.ball().y();
+
+    // End Time Detection
+    bool end_time;
+
+    if((steps_super * cfg->DeltaTime() * 1000) > 300000){
+        end_time = true;
+    } else{
+        end_time = false;
     }
-    double angle(){
-        return m_angle;
+
+
+    if ((((int)(steps_super * cfg->DeltaTime() * 1000) / 60000) - minute) > 0)
+    {
+        minute++;
+        std::cout << "****************** " << minute << " Minutes ****************" << std::endl;
     }
-};
+
+    if (randomStart && (is_goal || penalty || fault || goal_shot || end_time))
+    {
+
+
+       steps_fault = 0;
+        if(end_time){
+            steps_super = 0;
+            goals_blue = 0;
+            goals_yellow = 0;
+            minute = 0;
+        }
+
+
+    }else if(is_goal || end_time){
+
+
+        if(side)
+        {
+            dReal posX[6] = {0.15,0.35,0.71,-0.08,-0.35,-0.71};
+            dReal posY[6] = {0.02,0.13,-0.02,0.02,0.13,-0.02};
+
+
+
+        }else
+        {
+            dReal posX[6] = {0.08,0.35,0.71,-0.15,-0.35,-0.71};
+            dReal posY[6] = {0.02,0.13,-0.02,0.02,0.13,-0.02};
+
+        }if(end_time){
+            steps_fault = 0;
+            steps_super = 0;
+            goals_blue = 0;
+            goals_yellow = 0;
+            minute = 0;
+        }
+
+
+
+    }else if(fault){
+        if(quadrant == 0){
+
+
+            dReal posX[6] = {-0.575,-0.44,-0.71,-0.175,-0.3,0.71};
+            dReal posY[6] = {-0.4,0.13,-0.02,-0.4,0.13,-0.02};
+
+
+
+        }else if(quadrant == 1){
+
+
+            dReal posX[6] = {-0.575,-0.44,-0.71,-0.175,-0.30,0.71};
+            dReal posY[6] = {0.4,-0.13,-0.02,0.4,-0.13,-0.02};
+
+
+        }else if(quadrant == 2){
+
+
+            dReal posX[6] = {0.175,0.3,-0.71,0.575,0.44,0.71};
+            dReal posY[6] = {-0.4,0.13,-0.02,-0.4,0.13,-0.02};
+
+
+        }else if(quadrant == 3){
+
+
+            dReal posX[6] = {0.175,0.3,-0.71,0.575,0.44,0.71};
+            dReal posY[6] = {0.4,-0.13,-0.02,0.4,-0.13,-0.02};
+
+
+        }
+        steps_fault = 0;
+
+    }else if(penalty){
+
+        steps_fault = 0;
+
+        if(side)
+        {
+            dReal posX[6] = {0.75, -0.06, -0.06, 0.35, -0.05,-0.74};
+            dReal posY[6] = {-0.01, 0.23, -0.33, 0.02, 0.48, 0.01};
+
+
+        }else
+        {
+            dReal posX[6] = {0.35, -0.05,-0.74,0.75, -0.06, -0.06};
+            dReal posY[6] = {0.02, 0.48, 0.01,-0.01, 0.23, -0.33};
+
+
+
+        }
+
+    }else if(goal_shot){
+
+        steps_fault = 0;
+
+        dReal posX[6] = {0.65, 0.48, 0.49, 0.19, 0.18, -0.67};
+        dReal posY[6] = {0.11, 0.37, -0.33, 0.13, -0.21, -0.01};
+        if(side)
+        {
+
+        }else
+        {
+
+        }
+
+    }
+}
 
 
 void printRobotInfo(const fira_message::Robot & robot) {
@@ -62,181 +303,6 @@ void printRobotInfo(const fira_message::Robot & robot) {
     printf("ANGLE VEL=%6.3f \n",robot.vorientation());
 }
 
-double to180range(double angle) {
-  angle = fmod(angle, 2 * M_PI);
-  if (angle < -M_PI) {
-    angle = angle + 2 * M_PI;
-  } else if (angle > M_PI) {
-    angle = angle - 2 * M_PI;
-  }
-  return angle;
-}
-
-double smallestAngleDiff(double target, double source) {
-  double a;
-  a = fmod(target + 2*M_PI, 2 * M_PI) - fmod(source + 2*M_PI, 2 * M_PI);
-
-  if (a > M_PI) {
-    a = a - 2 * M_PI;
-  } else if (a < -M_PI) {
-    a = a + 2 * M_PI;
-  }
-  return a;
-}
-
-
-void PID(fira_message::Robot robot, Objective objective, int index,GrSim_Client &grSim_client)
-{
-    double Kp = 20;
-    double Kd = 2.5;
-    static double lastError = 0;
-
-    double rightMotorSpeed;
-    double leftMotorSpeed;
-
-    bool reversed = false;
-
-    double angle_rob = robot.orientation();
-
-
-    double angle_obj = atan2( objective.y() - robot.y(),  objective.x() - robot.x()) ;
-
-
-    double error = smallestAngleDiff(angle_rob, angle_obj);
-
-    if(fabs(error) > M_PI/2.0 + M_PI/20.0) {
-          reversed = true;
-          angle_rob = to180range(angle_rob+M_PI);
-          // Calculates the error and reverses the front of the robot
-          error = smallestAngleDiff(angle_rob,angle_obj);
-    }
-
-    double motorSpeed = (Kp*error) + (Kd * (error - lastError));// + 0.2 * sumErr;
-    lastError = error;
-
-
-
-    double baseSpeed = 30;
-
-    // Normalize
-    motorSpeed = motorSpeed > 30 ? 30 : motorSpeed;
-    motorSpeed = motorSpeed < -30 ? -30 : motorSpeed;
-
-    if (motorSpeed > 0) {
-      leftMotorSpeed = baseSpeed ;
-      rightMotorSpeed = baseSpeed - motorSpeed;
-    } else {
-      leftMotorSpeed = baseSpeed + motorSpeed;
-      rightMotorSpeed = baseSpeed;
-    }
-
-
-    if (reversed) {
-      if (motorSpeed > 0) {
-        leftMotorSpeed = -baseSpeed + motorSpeed;
-        rightMotorSpeed = -baseSpeed ;
-      } else {
-        leftMotorSpeed = -baseSpeed ;
-        rightMotorSpeed = -baseSpeed - motorSpeed;
-      }
-    }
-    grSim_client.sendCommand(leftMotorSpeed,rightMotorSpeed, index);
-}
-
-
-
-int estado = APROXIMA;
-int estadoant;
-double x,y,ang;
-double x_in,y_in;
-
-Objective defineObjective(fira_message::Robot robot, fira_message::Ball ball)
-{
-    double distancia = sqrt( pow(robot.x() - ball.x(),2) + pow(robot.y() - ball.y(),2) );
-    //calculo da distancia entre o jogador e a bola, por meio do módulo do vetor diferença!
-    if( robot.x() < ball.x() ){ //se o robô está atrás da bola
-        estado = APROXIMA;
-
-        if( (robot.y() < ball.y() - 5 || robot.y() > ball.y() + 5) && robot.x() >= 22)
-            //alinhando o robô com a bola!
-            return Objective(ball.x() - 10,ball.y(), M_PI/4.); // x,y,angle
-
-        else if( distancia < 8 && 49 < robot.y() && 83 > robot.y()){
-            //Se o robô 'está' com a bola e está indo em direção ao gol
-            return Objective(ball.x(), ball.y(), M_PI/4.);
-        }
-        else if( distancia < 8 && (43 > robot.y() || 83 < robot.y())){
-            //Se o robô 'está' com a bola e NÃO está indo em direção ao gol
-            return Objective(ball.x(), 66, M_PI/4.);
-        }
-        else
-            return Objective(ball.x(), ball.y(), M_PI/4.);
-            //no mais, corre atrás da bola...
-    }
-    else{
-        switch(estado){
-            case APROXIMA:
-                //corre atras da bola ate chegar perto
-                if(distancia < 10)
-                    estado = DECIDE_DESVIO;
-                x=ball.x() + 10;
-                y= ball.y();
-                ang = 0; // x,y,angle
-            break;
-
-            case DECIDE_DESVIO:
-                //desvia da bola, para voltar a ficar atrás dela
-                if(robot.y() - 10 > 6)
-                    estado = SOBE;
-                else
-                    estado = DESCE;
-
-            break;
-
-            case SOBE:
-                estadoant = SOBE;
-                estado = VOLTA;
-                x = ball.x() + 10;
-                y = ball.y() - 8;
-                x_in = robot.x();
-                y_in = robot.y();
-                ang = M_PI/2.0; // x,y,angle
-
-            break;
-            case DESCE:
-                estadoant = DESCE;
-                estado = VOLTA;
-                x = ball.x() + 10;
-                y = ball.y() + 8;
-                x_in = robot.x();
-                y_in = robot.y();
-                ang = M_PI/2.0; // x,y,angle
-
-            break;
-            case VOLTA:
-                if(robot.x() <= x_in - 16 || robot.x() <= 12){
-                    //se ele andou 16 ou tá no limite do mapa
-                    //fazendo_manobra = 0;
-                    estado = APROXIMA;
-                }
-                if(estadoant == DESCE){
-                x = ball.x() - 16;
-                y = ball.y() + 8;
-                ang = M_PI; // x,y,angle */
-                }
-                else{
-                    x = ball.x() - 16;
-                    y = ball.y() - 8;
-                    ang = M_PI; // x,y,angle */
-                }
-            break;
-        }
-
-        return Objective(x, y, ang);
-    }
-
-
-}
 
 int main(int argc, char *argv[]){
     (void)argc;
@@ -253,6 +319,7 @@ int main(int argc, char *argv[]){
             //see if the packet contains a robot detection frame:
             if (packet.has_frame()) {
                 fira_message::Frame detection = packet.frame();
+
 
 
 
@@ -279,8 +346,7 @@ int main(int argc, char *argv[]){
                     robot.set_orientation(to180range(robot.orientation()));
                     printf("-Robot(B) (%2d/%2d): ",i+1, robots_blue_n);
                     printRobotInfo(robot);
-                    Objective o = defineObjective(robot,ball);
-                    PID(robot,o,i,grSim_client);
+                    ;
 
                 }
 
