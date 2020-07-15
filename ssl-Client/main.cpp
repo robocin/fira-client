@@ -10,11 +10,14 @@
 #include "pb/common.pb.h"
 #include "pb/packet.pb.h"
 #include "pb/replacement.pb.h"
+enum situations {GOAL_BLUE, GOAL_YELLOW, PENALTY_BLUE, PENALTY_YELLOW, GOAL_SHOT_BLUE,
+                 GOAL_SHOT_YELLOW, FAULT_QUAD_1, FAULT_QUAD_2, FAULT_QUAD_3, FAULT_QUAD_4
+                };
 
 
 
 
-void posProcess(fira_message::Frame detection, uint32_t step){
+int posProcess(fira_message::Frame detection, uint32_t step){
     static Timer t;
     bool side;
     bool is_goal = false;
@@ -211,6 +214,10 @@ void posProcess(fira_message::Frame detection, uint32_t step){
 
 
 
+
+
+
+
 }
 
 
@@ -242,9 +249,37 @@ int main(int argc, char *argv[]){
             if (packet.has_frame()) {
                 fira_message::Frame detection = packet.frame();
 
-                posProcess(detection,packet.step());
+                int sit = posProcess(detection,packet.step());
+                double posX[6], posY[6];
+                double posBallX, posBallY;
 
-                //Ball info:
+                switch (sit) {
+                case GOAL_BLUE:
+                    break;
+                case GOAL_YELLOW:
+                    break;
+                case PENALTY_BLUE:
+                    break;
+                case PENALTY_YELLOW:
+                    break;
+                case GOAL_SHOT_BLUE:
+                    break;
+                case GOAL_SHOT_YELLOW:
+                    break;
+                case FAULT_QUAD_1:
+                    break;
+                case FAULT_QUAD_2:
+                    break;
+                case FAULT_QUAD_3:
+                    break;
+                case FAULT_QUAD_4:
+                    break;
+
+
+                }
+                grSim_client.sendCommand(posX, posY, posBallX, posBallY);
+
+
             }
 
             //see if packet contains geometry data:
@@ -262,6 +297,7 @@ int main(int argc, char *argv[]){
 
             }*/
         }
+
     }
 
     return 0;

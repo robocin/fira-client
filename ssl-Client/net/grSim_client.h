@@ -9,12 +9,14 @@
 #include "pb/packet.pb.h"
 #include "pb/replacement.pb.h"
 
+#define NUMBER_OF_ROBOTS 3
+
 class GrSim_Client : public QObject
 {
     Q_OBJECT
 public:
     explicit GrSim_Client(QObject *parent = 0);
-    void sendCommand(double velX, double velY, int id);
+    void sendCommand(double *posX, double *posY, double posBallX, double posBallY);
     QHostAddress _addr;
     quint16 _port;
 
