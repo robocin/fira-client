@@ -183,13 +183,23 @@ void posProcess(fira_message::Frame detection, uint32_t step){
         std::cout << "****************** " << minute << " Minutes ****************" << std::endl;
     }
     if(fault){
-        std::cout << "****************** Fault ****************" << std::endl;
+        std::cout << "****************** Fault " << quadrant << "****************" << std::endl;
     }
     if(penalty){
-        std::cout << "****************** Penalty ****************" << std::endl;
+        if(side){
+            std::cout << "****************** Penalty Blue ****************" << std::endl;
+        }else{
+            std::cout << "****************** Penalty Yellow ****************" << std::endl;
+
+        }
     }
     if(goal_shot){
-        std::cout << "****************** Goal Shot ****************" << std::endl;
+        if(side){
+            std::cout << "****************** Goal Shot Yellow****************" << std::endl;
+        }else{
+            std::cout << "****************** Goal Shot Blue ****************" << std::endl;
+
+        }
     }
 
 
