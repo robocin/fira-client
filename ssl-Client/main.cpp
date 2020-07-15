@@ -250,8 +250,8 @@ int main(int argc, char *argv[]){
                 fira_message::Frame detection = packet.frame();
 
                 int sit = posProcess(detection,packet.step());
-                double posX[6], posY[6];
-                double posBallX, posBallY;
+                double posX[6] = {0.15,0.35,0.71,-0.08,-0.35,-0.71}, posY[6] ={0.02,0.13,-0.02,0.02,0.13,-0.02};
+                double posBallX = 0.0, posBallY = 0.0;
 
                 switch (sit) {
                 case GOAL_BLUE:
@@ -277,6 +277,8 @@ int main(int argc, char *argv[]){
 
 
                 }
+
+
                 grSim_client.sendCommand(posX, posY, posBallX, posBallY);
 
 
