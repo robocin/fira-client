@@ -11,7 +11,7 @@
 #include "pb/packet.pb.h"
 #include "pb/replacement.pb.h"
 enum situations {GOAL_BLUE, GOAL_YELLOW, PENALTY_BLUE, PENALTY_YELLOW, GOAL_SHOT_BLUE,
-                 GOAL_SHOT_YELLOW, FAULT_QUAD_1, FAULT_QUAD_2, FAULT_QUAD_3, FAULT_QUAD_4
+                 GOAL_SHOT_YELLOW, FAULT_QUAD_0, FAULT_QUAD_1, FAULT_QUAD_2, FAULT_QUAD_3,NOTHING
                 };
 
 
@@ -35,7 +35,6 @@ int posProcess(fira_message::Frame detection, uint32_t step){
         side = true;
         goals_blue++;
         is_goal = true;
-        std::cout << "****************** Goal Blue ****************" << std::endl;
 
     }
     else if (detection.ball().x() < -0.75 && fabs(detection.ball().y()) < 0.2)
@@ -43,7 +42,6 @@ int posProcess(fira_message::Frame detection, uint32_t step){
         side = false;
         goals_yellow++;
         is_goal = true;
-        std::cout << "****************** Goal Yellow ****************" << std::endl;
 
     }
     if (detection.ball().x() < -2 || detection.ball().x() > 2 || detection.ball().y() > 2 || detection.ball().y() < -2)
@@ -185,26 +183,6 @@ int posProcess(fira_message::Frame detection, uint32_t step){
         minute++;
         std::cout << "****************** " << minute << " Minutes ****************" << std::endl;
     }
-    if(fault){
-        std::cout << "****************** Fault " << quadrant << "****************" << std::endl;
-    }
-    if(penalty){
-        if(side){
-            std::cout << "****************** Penalty Blue ****************" << std::endl;
-        }else{
-            std::cout << "****************** Penalty Yellow ****************" << std::endl;
-
-        }
-    }
-    if(goal_shot){
-        if(side){
-            std::cout << "****************** Goal Shot Yellow****************" << std::endl;
-        }else{
-            std::cout << "****************** Goal Shot Blue ****************" << std::endl;
-
-        }
-    }
-
 
     if(end_time){
         goals_blue = 0;
@@ -212,6 +190,51 @@ int posProcess(fira_message::Frame detection, uint32_t step){
         minute = 0;
     }
 
+    if(fault){
+        std::cout << "****************** Fault " << quadrant << "****************" << std::endl;
+        switch (quadrant) {
+            case 0:
+                return FAULT_QUAD_0;
+            case 1:
+                return FAULT_QUAD_1;
+            case 2:
+                return FAULT_QUAD_2;
+            case 3:
+                return FAULT_QUAD_3;
+
+        }
+    }
+    if(penalty){
+        if(side){
+            std::cout << "****************** Penalty Blue ****************" << std::endl;
+            return PENALTY_BLUE;
+        }else{
+            std::cout << "****************** Penalty Yellow ****************" << std::endl;
+            return PENALTY_YELLOW;
+        }
+    }
+    if(goal_shot){
+        if(side){
+            std::cout << "****************** Goal Shot Yellow****************" << std::endl;
+            return GOAL_SHOT_YELLOW;
+        }else{
+            std::cout << "****************** Goal Shot Blue ****************" << std::endl;
+            return GOAL_SHOT_BLUE;
+        }
+    }
+
+    if(is_goal){
+        if(side){
+            std::cout << "****************** Goal Blue ****************" << std::endl;
+            return GOAL_BLUE;
+        }else{
+            std::cout << "****************** Goal Yellow ****************" << std::endl;
+            return GOAL_YELLOW;
+        }
+    }
+
+
+    return NOTHING;
 
 
 
@@ -250,36 +273,85 @@ int main(int argc, char *argv[]){
                 fira_message::Frame detection = packet.frame();
 
                 int sit = posProcess(detection,packet.step());
-                double posX[6] = {0.15,0.35,0.71,-0.08,-0.35,-0.71}, posY[6] ={0.02,0.13,-0.02,0.02,0.13,-0.02};
+                std::vector<double> posX, posY ;
                 double posBallX = 0.0, posBallY = 0.0;
 
                 switch (sit) {
-                case GOAL_BLUE:
-                    break;
-                case GOAL_YELLOW:
-                    break;
-                case PENALTY_BLUE:
-                    break;
-                case PENALTY_YELLOW:
-                    break;
-                case GOAL_SHOT_BLUE:
-                    break;
-                case GOAL_SHOT_YELLOW:
-                    break;
-                case FAULT_QUAD_1:
-                    break;
-                case FAULT_QUAD_2:
-                    break;
-                case FAULT_QUAD_3:
-                    break;
-                case FAULT_QUAD_4:
-                    break;
+                    case GOAL_BLUE:
+                        posBallX = 0.0;
+                        posBallY = 0.0;
+                        posX = {-0.15,-0.35,-0.71,0.08,0.35,0.71};
+                        posY =  {0.02,0.13,-0.02,0.02,0.13,-0.02};
+                        grSim_client.sendCommand(posX, posY, posBallX, posBallY);
+                        break;
+                    case GOAL_YELLOW:
+                        posBallX = 0.0;
+                        posBallY = 0.0;
+                        posX = {-0.08,-0.35,-0.71,0.15,0.35,0.71};
+                        posY = {0.02,0.13,-0.02,0.02,0.13,-0.02};
+                        grSim_client.sendCommand(posX, posY, posBallX, posBallY);
+                        break;
+                    case PENALTY_BLUE:
+                        posBallX = -0.47;
+                        posBallY = -0.01;
+                        posX = {-0.75, 0.06, 0.06, -0.35, 0.05,0.74};
+                        posY = {-0.01, 0.23, -0.33, 0.02, 0.48, 0.01};
+                        grSim_client.sendCommand(posX, posY, posBallX, posBallY);
+                        break;
+                    case PENALTY_YELLOW:
+                        posBallX = 0.47;
+                        posBallY = -0.01;
+                        posX = {0.35, -0.05,-0.74,0.75, -0.06, -0.06};
+                        posY = {0.02, 0.48, 0.01,-0.01, 0.23, -0.33};
+                        grSim_client.sendCommand(posX, posY, posBallX, posBallY);
+                        break;
+                    case GOAL_SHOT_BLUE:
+                        posBallX = -0.61;
+                        posBallY = 0.11;
+                        posX = {-0.68, -0.48, -0.49, -0.19, -0.18, +0.67};
+                        posY = {0.11, 0.37, -0.33, 0.13, -0.21, -0.01};
+                        grSim_client.sendCommand(posX, posY, posBallX, posBallY);
+                        break;
+                    case GOAL_SHOT_YELLOW:
+                        posBallX = 0.61;
+                        posBallY = 0.11;
+                        posX = {0.19, 0.18, -0.67,0.68, 0.48, 0.49 };
+                        posY = {0.13, -0.21, -0.01, 0.11, 0.37, -0.33};
+                        grSim_client.sendCommand(posX, posY, posBallX, posBallY);
+                        break;
+                    case FAULT_QUAD_0:
+                        posBallX = -0.375;
+                        posBallY = -0.4;
+                        posX = {-0.575,-0.44,-0.71,-0.175,-0.3,0.71};
+                        posY = {-0.4,0.13,-0.02,-0.4,0.13,-0.02};
+                        grSim_client.sendCommand(posX, posY, posBallX, posBallY);
+                        break;
+                    case FAULT_QUAD_1:
+                        posBallX = -0.375;
+                        posBallY = 0.4;
+                        posX = {-0.575,-0.44,-0.71,-0.175,-0.30,0.71};
+                        posY = {0.4,-0.13,-0.02,0.4,-0.13,-0.02};
+                        grSim_client.sendCommand(posX, posY, posBallX, posBallY);
+                        break;
+                    case FAULT_QUAD_2:
+                        posBallX = 0.375;
+                        posBallY = -0.4;
+                        posX = {0.175,0.3,-0.71,0.575,0.44,0.71};
+                        posY = {-0.4,0.13,-0.02,-0.4,0.13,-0.02};
+                        grSim_client.sendCommand(posX, posY, posBallX, posBallY);
+                        break;
+                    case FAULT_QUAD_3:
+                        posBallX = 0.375;
+                        posBallY = 0.4;
+                        posX = {0.175,0.3,-0.71,0.575,0.44,0.71};
+                        posY = {0.4,-0.13,-0.02,0.4,-0.13,-0.02};
+                        grSim_client.sendCommand(posX, posY, posBallX, posBallY);
+                        break;
 
 
                 }
 
 
-                grSim_client.sendCommand(posX, posY, posBallX, posBallY);
 
 
             }

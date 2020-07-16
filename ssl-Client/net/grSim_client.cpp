@@ -14,7 +14,7 @@ GrSim_Client::GrSim_Client(QObject *parent) :
     connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
 }
 
-void GrSim_Client::sendCommand(double *posX, double *posY, double posBallX, double posBallY){
+void GrSim_Client::sendCommand(std::vector<double> posX, std::vector<double> posY, double posBallX, double posBallY){
     fira_message::sim_to_ref::Packet packet;
 
     fira_message::sim_to_ref::Replacement* replacement = packet.mutable_replace();

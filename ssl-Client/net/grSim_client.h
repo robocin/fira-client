@@ -16,7 +16,7 @@ class GrSim_Client : public QObject
     Q_OBJECT
 public:
     explicit GrSim_Client(QObject *parent = 0);
-    void sendCommand(double *posX, double *posY, double posBallX, double posBallY);
+    void sendCommand(std::vector<double> posX, std::vector<double> posY, double posBallX, double posBallY);
     QHostAddress _addr;
     quint16 _port;
 
