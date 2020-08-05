@@ -61,5 +61,9 @@ sh compile.sh
 
 1. Run the Qt Project!
 
-#### Author: [Renato Sousa](https://github.com/renatoosousa)/Robocin (https://github.com/robocin)
+
+
+#### Contributors: 
+- [Renato Sousa](https://github.com/renatoosousa) 
+- [Tiago Barros](https://github.com/tsb4)
 
