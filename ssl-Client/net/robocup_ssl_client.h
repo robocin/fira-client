@@ -20,7 +20,7 @@
 //========================================================================
 #ifndef ROBOCUP_SSL_CLIENT_H
 #define ROBOCUP_SSL_CLIENT_H
-#include "net/netraw.h"
+#include "netraw.h"
 #include <string>
 
 #include "pb/command.pb.h"
@@ -42,9 +42,7 @@ protected:
   string _net_address;
   string _net_interface;
 public:
-    RoboCupSSLClient(int port = 10020,
-                     string net_ref_address="224.5.23.2",
-                     string net_ref_interface="");
+    RoboCupSSLClient(string net_ref_address, int port, string net_ref_interface = "");
 
     ~RoboCupSSLClient();
     bool open(bool blocking=false);

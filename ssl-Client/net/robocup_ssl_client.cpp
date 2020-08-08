@@ -20,9 +20,9 @@
 //========================================================================
 #include "robocup_ssl_client.h"
 
-RoboCupSSLClient::RoboCupSSLClient(int port,
-                     string net_address,
-                     string net_interface)
+RoboCupSSLClient::RoboCupSSLClient(string net_address,
+                                    int port,
+                                    string net_interface)
 {
   _port=port;
   _net_address=net_address;
