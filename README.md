@@ -18,7 +18,7 @@ Almost every material present here can be found at:
 Feel free to ask and contribute too :)
 
 ## Dependencies
-- Qt Creator (remember to go in project and disable "shadow build")
+- Qt Creator
 - [protobuf](https://github.com/google/protobuf)
 
 *Tested with: Qt 5.8.0, protoc 3.x, Ubuntu 20.04 LTS.*
@@ -51,7 +51,7 @@ sh compile.sh
 1. Get the Vision multicast adress, Vision multicast port and Command listen port on grSim.
 ![](prints/ips.png)
 
-1. In Qt Creator IDE open the project thru the `ssl-Clienty.pro` file. In Projects (left options) un-check the `Shadow build`!
+1. In Qt Creator IDE open the project thru the `ssl-Clienty.pro` file.
 
 1. Go to `/ssl-Client/net/robocup_ssl_client.h` and paste the Vision Multicast adress and the Vision Multicast port on `string net_ref_address `and `int port`, respectively.
 ![](prints/clientH.png)
