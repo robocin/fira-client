@@ -1,30 +1,26 @@
 #include "grSim_client.h"
 
 
-GrSim_Client::GrSim_Client(QObject *parent) :
-    QObject(parent)
-{
+GrSim_Client::GrSim_Client(QString address, int port, QObject *parent) : QObject(parent){
+
     // create a QUDP socket
     socket = new QUdpSocket(this);
 
-    this->_addr.setAddress("127.0.0.1");
-    this->_port = quint16(20011);
+    this->_addr.setAddress(address);
+    this->_port = quint16(port);
 
     socket->bind(this->_addr, this->_port);
     connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
 }
 
-void GrSim_Client::sendCommand(double velX, int id){
-    double zero = 0.0;
+void GrSim_Client::sendCommand(double leftWheelVel, double rightWheelVel, bool my_robots_are_yellow, int id){
     fira_message::sim_to_ref::Packet packet;
-    bool yellow = false;
 
     fira_message::sim_to_ref::Command* command = packet.mutable_cmd()->add_robot_commands();
     command->set_id(id);
-
-    command->set_wheel_left(velX);
-    command->set_wheel_right(velX);
-
+    command->set_yellowteam(my_robots_are_yellow);
+    command->set_wheel_left(leftWheelVel);
+    command->set_wheel_right(rightWheelVel);
 
     QByteArray dgram;
     dgram.resize(packet.ByteSize());

@@ -24,14 +24,20 @@ void printRobotInfo(const fira_message::Robot & robot) {
 int main(int argc, char *argv[]){
     (void)argc;
     (void)argv;
-    RoboCupSSLClient client;
-    client.open(false);
+
+    //define your team color here
+    bool my_robots_are_yellow = false;
+    
+    // the ip address need to be in the range 224.0.0.0 through 239.255.255.255
+    RoboCupSSLClient visionClient("224.5.23.2", 10020);
+    visionClient.open(false);
+
+    GrSim_Client commandClient("127.0.0.1", 20011);
+
     fira_message::sim_to_ref::Environment packet;
 
-    GrSim_Client grSim_client;
-
     while(true) {
-        if (client.receive(packet)) {
+        if (visionClient.receive(packet)) {
             printf("-----Received Wrapper Packet---------------------------------------------\n");
             //see if the packet contains a robot detection frame:
             if (packet.has_frame()) {
@@ -46,18 +52,18 @@ int main(int argc, char *argv[]){
                 fira_message::Ball ball = detection.ball();
                 printf("-Ball:  POS=<%9.2f,%9.2f> \n",ball.x(),ball.y());
 
-
-
                 //Blue robot info:
                 for (int i = 0; i < robots_blue_n; i++) {
                     fira_message::Robot robot = detection.robots_blue(i);
                     printf("-Robot(B) (%2d/%2d): ",i+1, robots_blue_n);
                     printRobotInfo(robot);
 
-                    if(robot.x() <= 0){
-                        grSim_client.sendCommand(10, i);
-                    }else{
-                        grSim_client.sendCommand(-10, i);
+                    if(!my_robots_are_yellow){
+                        if(robot.x() <= 0){
+                            commandClient.sendCommand(10, 10, my_robots_are_yellow, i);
+                        }else{
+                            commandClient.sendCommand(-10, -10, my_robots_are_yellow, i);
+                        }
                     }
                 }
 
@@ -66,6 +72,14 @@ int main(int argc, char *argv[]){
                     fira_message::Robot robot = detection.robots_yellow(i);
                     printf("-Robot(Y) (%2d/%2d): ",i+1, robots_yellow_n);
                     printRobotInfo(robot);
+
+                    if(my_robots_are_yellow){
+                        if(robot.x() <= 0){
+                            commandClient.sendCommand(10, 10, my_robots_are_yellow, i);
+                        }else{
+                            commandClient.sendCommand(-10, -10, my_robots_are_yellow, i);
+                        }
+                    }
                 }
 
             }
@@ -80,9 +94,6 @@ int main(int argc, char *argv[]){
                 printf("  -field_width=%f (mm)\n",field.width());
                 printf("  -goal_width=%f (mm)\n",field.goal_width());
                 printf("  -goal_depth=%f (mm)\n",field.goal_depth());
-
-
-
             }
         }
     }

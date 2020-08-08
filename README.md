@@ -33,7 +33,7 @@ protoc --version
 
 1. According to its version download the referent in [protobuf/tags](https://github.com/google/protobuf/tags).
 
-1. Extract the downloaded file and go to `/protobuf-3.0.0/src/` *(example version)*.
+1. Extract the downloaded file and go to `/protobuf-3.6.1/src/` *(example version)*.
 
 1. Copy the google folder and paste it into `/ssl-Client/net`
 
@@ -53,10 +53,10 @@ sh compile.sh
 
 1. In Qt Creator IDE open the project thru the `ssl-Clienty.pro` file.
 
-1. Go to `/ssl-Client/net/robocup_ssl_client.h` and paste the Vision Multicast adress and the Vision Multicast port on `string net_ref_address `and `int port`, respectively.
+1. Go to `/ssl-Client/main.cpp` and paste the Vision Multicast adress and the Vision Multicast port on `visionCliente` initialization.
 ![](prints/clientH.png)
 
-1. Go to `/ssl-Client/net/grSim_client.cpp` and paste the Vision Multicast adress and the Command listen port on `this->_addr.setAddress()`and `this->_port = quint16()`, respectively. 
+1. Go to `/ssl-Client/main.cpp` and paste the Vision Multicast adress and the Command listen port on `commandCliente` initialization.
 ![](prints/myudpCPP.png)
 
 1. Run the Qt Project!
