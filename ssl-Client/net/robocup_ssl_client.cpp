@@ -18,7 +18,7 @@
   \author  Stefan Zickler, 2009
 */
 //========================================================================
-#include "net/robocup_ssl_client.h"
+#include "robocup_ssl_client.h"
 
 RoboCupSSLClient::RoboCupSSLClient(int port,
                      string net_address,

@@ -3,12 +3,11 @@
 #include <stdio.h>
 #include "net/robocup_ssl_client.h"
 #include "net/grSim_client.h"
-#include "util/timer.h"
 
-#include "pb/command.pb.h"
-#include "pb/common.pb.h"
-#include "pb/packet.pb.h"
-#include "pb/replacement.pb.h"
+#include "net/pb/command.pb.h"
+#include "net/pb/common.pb.h"
+#include "net/pb/packet.pb.h"
+#include "net/pb/replacement.pb.h"
 
 
 void printRobotInfo(const fira_message::Robot & robot) {

@@ -8,24 +8,21 @@ QT += core
 QT += network
 
 SOURCES += main.cpp \
-    pb/command.pb.cc \
-    pb/common.pb.cc \
-    pb/packet.pb.cc \
-    pb/replacement.pb.cc \
+    net/pb/command.pb.cc \
+    net/pb/common.pb.cc \
+    net/pb/packet.pb.cc \
+    net/pb/replacement.pb.cc \
     net/robocup_ssl_client.cpp \
     net/netraw.cpp \
     net/grSim_client.cpp
 
-HEADERS += pb/command.pb.h \
-    pb/common.pb.h \
-    pb/packet.pb.h \
-    pb/replacement.pb.h \
+HEADERS += net/pb/command.pb.h \
+    net/pb/common.pb.h \
+    net/pb/packet.pb.h \
+    net/pb/replacement.pb.h \
     net/robocup_ssl_client.h \
     net/netraw.h \
-    util/timer.h \
-    util/util.h \
     net/grSim_client.h
 
-INCLUDEPATH += include
 LIBS += -lpthread \
     -L/usr/local/lib -lprotobuf -lz

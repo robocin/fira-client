@@ -9,6 +9,13 @@
 #include <stdio.h>
 #include <string.h>
 
+template <class data>
+inline void mzero(data &d)
+{
+  memset(&d,0,sizeof(d));
+}
+
+
 namespace Net{
 
 //====================================================================//

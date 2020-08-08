@@ -1,4 +1,4 @@
-#include "net/grSim_client.h"
+#include "grSim_client.h"
 
 
 GrSim_Client::GrSim_Client(QObject *parent) :
