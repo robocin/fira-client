@@ -7,9 +7,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include "util/util.h"
-
-#include "net/netraw.h"
+#include "netraw.h"
 
 namespace Net{
 
