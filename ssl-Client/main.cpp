@@ -1,20 +1,22 @@
 //author  Renato Sousa, 2018
-#include <QtNetwork>
+//#include <QtNetwork>
 #include <stdio.h>
-#include "net/robocup_ssl_client.h"
-#include "net/grSim_client.h"
+#include <iostream>
+#include "robocup_ssl_client.h"
+#include "robocup_ssl_client.cpp"
+//#include "net/grSim_client.h"
 
-#include "net/pb/command.pb.h"
-#include "net/pb/common.pb.h"
-#include "net/pb/packet.pb.h"
-#include "net/pb/replacement.pb.h"
+#include "pb/command.pb.h"
+#include "pb/common.pb.h"
+#include "pb/packet.pb.h"
+#include "pb/replacement.pb.h"
 
-#include "net/pb/vssref_command.pb.h"
-#include "net/pb/vssref_common.pb.h"
-#include "net/pb/vssref_placement.pb.h"
-
-#include "net/refereeclient.h"
-#include "net/replacerclient.h"
+//#include "net/pb/vssref_command.pb.h"
+//#include "net/pb/vssref_common.pb.h"
+//#include "net/pb/vssref_placement.pb.h"
+//
+//#include "net/refereeclient.h"
+//#include "net/replacerclient.h"
 
 enum Fouls{
         FREE_KICK,
@@ -42,7 +44,7 @@ int main(int argc, char *argv[]){
     (void)argc;
     (void)argv;
 
-    std::vector<double> posX, posY ;
+    /*std::vector<double> posX, posY ;
 
     refereeClient client("224.5.23.2", 10003);
     client.open(false);
@@ -55,24 +57,24 @@ int main(int argc, char *argv[]){
         //printf("A esperar....\n");
        if(client.receive(packet)){
            printf("Foul : %d\n", packet.foul());
-           posX = {-0.08,-0.35,-0.71};
-           posY = {-0.4,0.13,-0.02};
+           posX = {-0.5,0.5,0.0};
+           posY = {0.5,0.5,0.5};
            replacer.sendCommand(posX, posY);
        }
-    }
+    }*/
 
-    /*
+    
     //define your team color here
     bool my_robots_are_yellow = false;
     
     // the ip address need to be in the range 224.0.0.0 through 239.255.255.255
-    RoboCupSSLClient visionClient("224.5.23.2", 10020);
+    RoboCupSSLClient visionClient("224.5.23.2", 10002);
     visionClient.open(false);
 
-    RoboCupSSLClient refereeClient("224.5.23.2", 10020);
-    refereeClient.open(false);
+    //RoboCupSSLClient refereeClient("224.5.23.2", 10020);
+    //refereeClient.open(false);
 
-    GrSim_Client commandClient("127.0.0.1", 20011);
+    //GrSim_Client commandClient("127.0.0.1", 20011);
     
 
     fira_message::sim_to_ref::Environment packet;
@@ -94,7 +96,7 @@ int main(int argc, char *argv[]){
                 printf("-Ball:  POS=<%9.2f,%9.2f> \n",ball.x(),ball.y());
 
                 //Blue robot info:
-                for (int i = 0; i < robots_blue_n; i++) {
+                /*for (int i = 0; i < robots_blue_n; i++) {
                     fira_message::Robot robot = detection.robots_blue(i);
                     //printf("-Robot(B) (%2d/%2d): ",i+1, robots_blue_n);
                     //printRobotInfo(robot);
@@ -121,7 +123,7 @@ int main(int argc, char *argv[]){
                             commandClient.sendCommand(-10, -10, my_robots_are_yellow, i);
                         }
                     }
-                }
+                }*/
 
             }
 
@@ -138,6 +140,6 @@ int main(int argc, char *argv[]){
             //}
         }
     }
-*/
+
     return 0;
 }
