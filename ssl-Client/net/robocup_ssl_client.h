@@ -23,10 +23,10 @@
 #include "netraw.h"
 #include <string>
 
-#include "pb/command.pb.h"
+//#include "pb/command.pb.h"
 #include "pb/common.pb.h"
-#include "pb/packet.pb.h"
-#include "pb/replacement.pb.h"
+//#include "pb/packet.pb.h"
+//#include "pb/replacement.pb.h"
 
 using namespace std;
 /**
