@@ -59,7 +59,9 @@ sh compile.sh
 1. Go to `/ssl-Client/main.cpp` and paste the Vision Multicast adress and the Command listen port on `commandCliente` initialization.
 ![](prints/myudpCPP.png)
 
-1. Run the Qt Project!
+1. compile running the script compile.sh and run the bin main
+
+
 
 
 
