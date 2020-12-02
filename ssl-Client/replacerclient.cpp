@@ -1,15 +1,15 @@
 #include "replacerclient.h"
+#include<QUdpSocket>
 
-replacerClient::replacerClient(QString address, int port, QObject *parent) : QObject(parent){
+replacerClient::replacerClient(QString address, int port){
 
     // create a QUDP socket
-    socket = new QUdpSocket(this);
+    socket = new QUdpSocket();
 
     this->_addr.setAddress(address);
     this->_port = quint16(port);
 
     socket->bind(this->_addr, this->_port);
-    connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
 }
 
 void replacerClient::sendCommand(std::vector<double> posX, std::vector<double> posY){
@@ -33,18 +33,4 @@ void replacerClient::sendCommand(std::vector<double> posX, std::vector<double> p
     }
 }
 
-void replacerClient::readyRead(){
-    // when data comes in
-    QByteArray buffer;
-    buffer.resize(socket->pendingDatagramSize());
 
-    QHostAddress sender;
-    quint16 senderPort;
-
-    socket->readDatagram(buffer.data(), buffer.size(),
-                         &sender, &senderPort);
-
-    qDebug() << "Message from: " << sender.toString();
-    qDebug() << "Message port: " << senderPort;
-    qDebug() << "Message: " << buffer;
-}

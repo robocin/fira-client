@@ -10,20 +10,14 @@
 #include "pb/vssref_common.pb.h"
 #include "pb/vssref_placement.pb.h"
 
-class replacerClient : public QObject
+class replacerClient
 {
-    Q_OBJECT
 public:
-    replacerClient(QString address, int port, QObject *parent = 0);
+    replacerClient(QString address, int port);
     void sendCommand(std::vector<double> posX, std::vector<double> posY);
 
     QHostAddress _addr;
     quint16 _port;
-
-signals:
-
-public slots:
-    void readyRead();
 
 private:
     QUdpSocket *socket;
