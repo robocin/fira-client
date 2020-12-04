@@ -3,7 +3,7 @@
 > Client base code #vss #LARC #ssl-vision #FiraSim 
 
 ## Description
-This repository was created for the purpose of helping beginner teams.
+This repository was created for the purpose of RoboCin selection program.
 This project is capable of:
 - receive field and robot information from FiraSim
 - Send commands to robots on grSim
@@ -18,7 +18,6 @@ Almost every material present here can be found at:
 Feel free to ask and contribute too :)
 
 ## Dependencies
-- Qt Creator
 - [protobuf](https://github.com/google/protobuf)
 
 *Tested with: Qt 5.8.0, protoc 3.x, Ubuntu 20.04 LTS.*
@@ -51,15 +50,17 @@ sh compile.sh
 1. Get the Vision multicast adress, Vision multicast port and Command listen port on grSim.
 ![](prints/ips.png)
 
-1. In Qt Creator IDE open the project thru the `ssl-Clienty.pro` file.
-
 1. Go to `/ssl-Client/main.cpp` and paste the Vision Multicast adress and the Vision Multicast port on `visionCliente` initialization.
 ![](prints/clientH.png)
 
 1. Go to `/ssl-Client/main.cpp` and paste the Vision Multicast adress and the Command listen port on `commandCliente` initialization.
 ![](prints/myudpCPP.png)
 
-1. compile running the script compile.sh and run the bin main
+1. Fill the function defineObjective with the code to define an objective to each robot.
+
+1. Run the file compile.sh to compile the code.
+
+1. Run the bin main.
 
 
 
